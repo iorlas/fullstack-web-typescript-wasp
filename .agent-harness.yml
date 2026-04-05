@@ -1,0 +1,9 @@
+stacks:
+  - javascript
+
+exclude:
+  - .wasp/
+  - e2e-tests/
+
+javascript:
+  line_length: 100
