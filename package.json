@@ -1,6 +1,9 @@
 {
   "name": "fullstack-web-typescript-wasp",
   "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "workspaces": [
     ".wasp/out/*",
     ".wasp/out/sdk/wasp"
