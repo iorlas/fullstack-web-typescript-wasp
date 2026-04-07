@@ -45,6 +45,7 @@ export const updateTaskStatus: UpdateTaskStatus<UpdateTaskStatusArgs> = async (
   return context.entities.Task.update({
     where: {
       id,
+      userId: context.user.id,
     },
     data: { isDone },
   });
