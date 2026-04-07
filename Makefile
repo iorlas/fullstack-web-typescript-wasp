@@ -52,8 +52,9 @@ test:
 
 dev:
 	@echo "Starting PostgreSQL + Wasp dev server..."
-	@wasp start db &
-	@sleep 2
+	@wasp start db & DB_PID=$$!; \
+	trap "kill $$DB_PID 2>/dev/null; wait $$DB_PID 2>/dev/null" EXIT INT TERM; \
+	sleep 2; \
 	wasp start
 
 db:
