@@ -2,6 +2,14 @@
 
 Fullstack TypeScript web app template built with [Wasp](https://wasp.sh) v0.22.
 
+## Prerequisites
+
+- **Node.js** >= 22
+- **Docker** (running) — required for PostgreSQL
+- **Wasp CLI** — `npm i -g @wasp.sh/wasp-cli@latest`
+
+Run `make bootstrap` to verify prerequisites, install dependencies, set up env files, and install Playwright browsers.
+
 ## Stack
 
 - **Framework:** Wasp 0.22 (React 19 + Node.js + Express)
@@ -28,13 +36,13 @@ env.server.example # Required env vars (Google OAuth credentials)
 ## Dev Commands
 
 ```bash
+# First-time setup
+make bootstrap                        # Install deps, env files, Playwright, compile SDK
+
 # Start development
 wasp start db                         # Start PostgreSQL (Docker)
 wasp db migrate-dev                   # Run database migrations
 wasp start                            # Start dev server (client :3000, server :3001)
-
-# Database
-wasp db studio                        # Open Prisma Studio GUI
 
 # Quality gates
 make fix                              # Auto-fix (biome format + lint fix)
@@ -52,7 +60,7 @@ wasp build                            # Production build
 
 1. Read spec/ticket
 2. Write failing e2e test in `e2e-tests/tests/`
-3. Implement feature: schema → `wasp db migrate-dev` → queries/actions → UI
+3. Implement feature: schema → migrate → main.wasp → compile → server functions → UI
 4. `make check` — verifies lint + type check + e2e tests pass
 5. Refactor, re-run `make check`
 
@@ -82,6 +90,7 @@ No manual service management needed. Just run `make test`.
 - **tsc errors about `wasp/*` modules:** Run `wasp compile` first (or `make typecheck`)
 - **e2e tests hang:** Ensure Docker is running (`docker info`)
 - **Port conflicts:** Kill existing processes on :3000/:3001 or let wasp-app-runner handle it
+- **Google OAuth not working in dev:** Edit `.env.server` with real Google credentials from [console.cloud.google.com](https://console.cloud.google.com/apis/credentials). Email/password auth works without Google credentials.
 
 ## Wasp Concepts
 
@@ -97,11 +106,12 @@ No manual service management needed. Just run `make test`.
 1. Define models in `schema.prisma`
 2. Run `wasp db migrate-dev` to apply schema changes
 3. Declare queries/actions in `main.wasp` with entity bindings
-4. Implement server functions in `src/<feature>/queries.ts` and `src/<feature>/actions.ts`
-5. Create page component in `src/<feature>/`
-6. Add route + page in `main.wasp`
-7. Write e2e tests in `e2e-tests/tests/`
-8. Run `make check` to verify everything
+4. Run `wasp compile` to generate TypeScript types for new queries/actions
+5. Implement server functions in `src/<feature>/queries.ts` and `src/<feature>/actions.ts`
+6. Create page component in `src/<feature>/`
+7. Add route + page in `main.wasp`
+8. Write e2e tests in `e2e-tests/tests/`
+9. Run `make check` to verify everything
 
 ## Code Style
 
