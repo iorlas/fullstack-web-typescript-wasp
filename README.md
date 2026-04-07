@@ -1,35 +1,81 @@
-# Basic Starter – A Simple ToDo App
+# fullstack-web-typescript-wasp
 
-Basic starter is a well-rounded template that showcases the most important bits of working with Wasp.
+Fullstack TypeScript web app template optimized for AI-assisted development.
+
+Built with [Wasp](https://wasp.sh) v0.22 — React 19, Node.js/Express, PostgreSQL, Tailwind CSS 4.
+
+## What's included
+
+- **Auth** — Google OAuth + email/password (built-in, zero config for dev)
+- **Task CRUD** — Full working example: queries, actions, components, pages
+- **E2E tests** — Playwright with automatic DB + app lifecycle via wasp-app-runner
+- **Quality gates** — Biome linting/formatting, TypeScript strict mode, agent-harness checks, pre-commit hooks
+- **AI-ready** — CLAUDE.md with dev commands, TDD workflow, feature creation guide
+
+## Quick start
+
+```bash
+git clone https://github.com/iorlas/fullstack-web-typescript-wasp.git
+cd fullstack-web-typescript-wasp
+make bootstrap    # installs deps, env files, Playwright browsers, compiles SDK
+```
+
+Then in two terminals:
+
+```bash
+wasp start db     # terminal 1: start PostgreSQL
+wasp start        # terminal 2: start dev server
+```
+
+App runs at http://localhost:3000.
 
 ## Prerequisites
 
-- **Node.js** (newest LTS version recommended): We recommend install Node through a Node version manager, e.g. `nvm`.
-- **Wasp** (latest version): Install via
-  ```sh
-  npm i -g @wasp.sh/wasp-cli@latest
-  ```
+- **Node.js** >= 22
+- **Docker** (running) — for PostgreSQL
+- **Wasp CLI** — `npm i -g @wasp.sh/wasp-cli@latest`
 
-## Using the template
+`make bootstrap` verifies all prerequisites and sets everything up.
 
-You can use this template through the Wasp CLI:
+## Development workflow
 
 ```bash
-wasp new <project-name>
-# or
-wasp new <project-name> -t basic
+make fix          # auto-fix formatting
+make lint         # wasp compile → tsc → biome → agent-harness
+make test         # starts DB + app → runs Playwright e2e → tears down
+make check        # lint + test (full quality gate)
 ```
 
-## Development
+### Adding a new feature
 
-To start the application locally for development or preview purposes:
+1. Define model in `schema.prisma`
+2. `wasp db migrate-dev`
+3. Declare queries/actions in `main.wasp`
+4. `wasp compile` (generates TypeScript types)
+5. Implement in `src/<feature>/`
+6. Write e2e tests in `e2e-tests/tests/`
+7. `make check`
 
-1. Run `wasp db migrate-dev` to migrate the database to the latest migration
-2. Run `wasp start` to start the Wasp application. If running for the first time, this will also install the client and the server dependencies for you.
-3. The application should be running on `localhost:3000`. Open in it your browser to access the client.
+See [CLAUDE.md](CLAUDE.md) for detailed documentation.
 
-To improve your Wasp development experience, we recommend installing the [Wasp extension for VSCode](https://marketplace.visualstudio.com/items?itemName=wasp-lang.wasp).
+## Project structure
 
-## Learn more
+```
+main.wasp            App config (routes, pages, queries, actions, auth)
+schema.prisma        Database models (Prisma)
+src/
+  auth/              Google OAuth + email/password auth pages
+  tasks/             Task CRUD example (follow this pattern)
+  shared/            Reusable UI components
+e2e-tests/           Playwright e2e tests
+Makefile             Dev commands (bootstrap, lint, fix, test, check)
+CLAUDE.md            AI agent instructions
+```
 
-To find out more about Wasp, visit out [docs](https://wasp.sh/docs).
+## Google OAuth setup (optional)
+
+Email/password auth works out of the box. For Google login:
+
+1. Create OAuth credentials at [console.cloud.google.com](https://console.cloud.google.com/apis/credentials)
+2. Set redirect URI to `http://localhost:3001/auth/google/callback`
+3. Edit `.env.server` with your `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`
