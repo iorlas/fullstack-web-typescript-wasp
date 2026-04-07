@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { SignupForm } from "wasp/client/auth";
-import { AuthLayout } from "../AuthLayout";
+import { AuthLayout } from "./AuthLayout";
 
 export function SignupPage() {
   return (

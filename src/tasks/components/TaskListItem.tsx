@@ -1,11 +1,10 @@
 import type { ChangeEvent } from "react";
 import { twJoin } from "tailwind-merge";
 import { updateTaskStatus } from "wasp/client/operations";
-import { TagLabel } from "../../tags/components/TagLabel";
-import type { TaskWithTags } from "../queries";
+import type { Task } from "wasp/entities";
 
 interface TaskListItemProps {
-  task: TaskWithTags;
+  task: Task;
 }
 
 export function TaskListItem({ task }: TaskListItemProps) {
@@ -40,13 +39,6 @@ export function TaskListItem({ task }: TaskListItemProps) {
             <span className="text-xs text-neutral-500">{task.createdAt.toLocaleDateString()}</span>
           </div>
         </div>
-        <ul className="flex flex-wrap gap-x-2">
-          {task.tags.map((tag) => (
-            <li key={tag.id}>
-              <TagLabel tag={tag} isActive={true} size="tiny" />
-            </li>
-          ))}
-        </ul>
       </label>
     </li>
   );

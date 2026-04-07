@@ -1,15 +1,10 @@
-import type { Tag, Task } from "wasp/entities";
+import type { Task } from "wasp/entities";
 import { HttpError } from "wasp/server";
 import type { CreateTask, DeleteCompletedTasks, UpdateTaskStatus } from "wasp/server/operations";
 
-type CreateTaskArgs = Pick<Task, "description"> & {
-  tagIds: Tag["id"][];
-};
+type CreateTaskArgs = Pick<Task, "description">;
 
-export const createTask: CreateTask<CreateTaskArgs, Task> = async (
-  { description, tagIds },
-  context,
-) => {
+export const createTask: CreateTask<CreateTaskArgs, Task> = async ({ description }, context) => {
   if (!context.user) {
     throw new HttpError(401);
   }
@@ -22,11 +17,6 @@ export const createTask: CreateTask<CreateTaskArgs, Task> = async (
         connect: {
           id: context.user.id,
         },
-      },
-      tags: {
-        connect: tagIds.map((tag) => ({
-          id: tag,
-        })),
       },
     },
   });

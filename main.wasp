@@ -9,12 +9,15 @@ app fullstackWebTypescriptWasp {
   auth: {
     userEntity: User,
     methods: {
+      google: {
+        userSignupFields: import { googleUserSignupFields } from "@src/auth/google",
+      },
       email: {
         fromField: {
           name: "Basic App",
           email: "hello@example.com"
         },
-        userSignupFields: import { userSignupFields } from "@src/auth/email/userSignupFields",
+        userSignupFields: import { emailUserSignupFields } from "@src/auth/email/userSignupFields",
         emailVerification: {
           clientRoute: EmailVerificationRoute,
         },
@@ -37,12 +40,12 @@ app fullstackWebTypescriptWasp {
 // #region Auth
 route LoginRoute { path: "/login", to: LoginPage }
 page LoginPage {
-  component: import { LoginPage } from "@src/auth/email/LoginPage"
+  component: import { LoginPage } from "@src/auth/LoginPage"
 }
 
 route SignupRoute { path: "/signup", to: SignupPage }
 page SignupPage {
-  component: import { SignupPage } from "@src/auth/email/SignupPage"
+  component: import { SignupPage } from "@src/auth/SignupPage"
 }
 
 route RequestPasswordResetRoute { path: "/request-password-reset", to: RequestPasswordResetPage }
@@ -70,7 +73,7 @@ page TasksPage {
 
 query getTasks {
   fn: import { getTasks } from "@src/tasks/queries",
-  entities: [Task, Tag]
+  entities: [Task]
 }
 
 action createTask {
@@ -86,15 +89,5 @@ action updateTaskStatus {
 action deleteCompletedTasks {
   fn: import { deleteCompletedTasks } from "@src/tasks/actions",
   entities: [Task],
-}
-
-query getTags {
-  fn: import { getTags } from "@src/tags/queries",
-  entities: [Tag]
-}
-
-action createTag {
-  fn: import { createTag } from "@src/tags/actions",
-  entities: [Tag]
 }
 // #endregion Tasks

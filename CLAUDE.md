@@ -8,7 +8,7 @@ Fullstack TypeScript web app template built with [Wasp](https://wasp.sh) v0.22.
 - **Language:** TypeScript (strict)
 - **Database:** PostgreSQL via Prisma ORM
 - **Styling:** Tailwind CSS 4
-- **Auth:** Email (Dummy provider in dev)
+- **Auth:** Google OAuth (primary) + Email/password (fallback, Dummy provider in dev)
 - **E2E Tests:** Playwright + wasp-app-runner
 
 ## Project Structure
@@ -17,12 +17,12 @@ Fullstack TypeScript web app template built with [Wasp](https://wasp.sh) v0.22.
 main.wasp          # App config: routes, pages, queries, actions, auth
 schema.prisma      # Database models (Prisma)
 src/               # Application source code
-  auth/            # Auth pages (login, signup, password reset)
+  auth/            # Auth: Google OAuth + email/password (login, signup, password reset)
   tasks/           # Task CRUD (pages, components, queries, actions)
-  tags/            # Tag CRUD (components, queries, actions)
-  shared/          # Shared UI components (Button, Dialog, Header, Input)
+  shared/          # Shared UI components (Button, Header, Input)
   App.tsx          # Root component
 e2e-tests/         # Playwright e2e tests (separate package)
+env.server.example # Required env vars (Google OAuth credentials)
 ```
 
 ## Dev Commands
