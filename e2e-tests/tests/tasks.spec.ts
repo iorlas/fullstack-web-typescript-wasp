@@ -14,12 +14,16 @@ test.describe("Tasks CRUD (authenticated)", () => {
   const username = "testuser123";
 
   test.beforeEach(async ({ page }) => {
-    // Sign up once, then log in for each test
-    // With SKIP_EMAIL_VERIFICATION_IN_DEV=true, signup auto-verifies
-    try {
-      await signUp(page, email, password, username);
-    } catch {
-      // User may already exist from a previous test in this suite
+    // Sign up, then log in. With SKIP_EMAIL_VERIFICATION_IN_DEV=true, signup auto-verifies.
+    // If user already exists from a previous test, signup page will show an error — skip to login.
+    await signUp(page, email, password, username);
+    const signupFailed = await page
+      .getByText(/already exists|already registered/i)
+      .isVisible()
+      .catch(() => false);
+    if (!signupFailed) {
+      // Fresh signup — navigate to login
+      await page.goto("/login");
     }
     await logIn(page, email, password);
   });
