@@ -24,5 +24,8 @@ export default defineConfig({
     url: "http://localhost:3001",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    env: {
+      SKIP_EMAIL_VERIFICATION_IN_DEV: "true",
+    },
   },
 });
