@@ -20,11 +20,10 @@ cd fullstack-web-typescript-wasp
 make bootstrap    # installs deps, env files, Playwright browsers, compiles SDK
 ```
 
-Then in two terminals:
+Then:
 
 ```bash
-wasp start db     # terminal 1: start PostgreSQL
-wasp start        # terminal 2: start dev server
+make dev          # starts PostgreSQL + dev server
 ```
 
 App runs at http://localhost:3000.

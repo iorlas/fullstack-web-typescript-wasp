@@ -29,7 +29,7 @@ bootstrap:
 	wasp compile
 	@echo ""
 	@echo "=== ✅ Bootstrap complete ==="
-	@echo "Run 'make dev' to start developing (requires 'wasp start db' in another terminal)"
+	@echo "Run 'make dev' to start developing"
 
 # --- Quality gates ---
 
@@ -51,6 +51,9 @@ test:
 # --- Development ---
 
 dev:
+	@echo "Starting PostgreSQL + Wasp dev server..."
+	@wasp start db &
+	@sleep 2
 	wasp start
 
 db:

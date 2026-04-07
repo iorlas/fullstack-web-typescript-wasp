@@ -40,9 +40,8 @@ env.server.example # Required env vars (Google OAuth credentials)
 make bootstrap                        # Install deps, env files, Playwright, compile SDK
 
 # Start development
-wasp start db                         # Start PostgreSQL (Docker)
-wasp db migrate-dev                   # Run database migrations
-wasp start                            # Start dev server (client :3000, server :3001)
+make dev                              # Start PostgreSQL + dev server (client :3000, server :3001)
+wasp db migrate-dev                   # Run database migrations (if schema changed)
 
 # Quality gates
 make fix                              # Auto-fix (biome format + lint fix)
