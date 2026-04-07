@@ -9,7 +9,7 @@ Fullstack TypeScript web app template built with [Wasp](https://wasp.sh) v0.22.
 - **Database:** PostgreSQL via Prisma ORM
 - **Styling:** Tailwind CSS 4
 - **Auth:** Email (Dummy provider in dev)
-- **E2E Tests:** Playwright
+- **E2E Tests:** Playwright + wasp-app-runner
 
 ## Project Structure
 
@@ -35,31 +35,60 @@ wasp start                            # Start dev server (client :3000, server :
 
 # Database
 wasp db studio                        # Open Prisma Studio GUI
-wasp db seed                          # Seed database (if configured)
 
 # Quality gates
-make lint                             # Lint (biome + agent-harness)
-make fix                              # Auto-fix + lint
-make check                            # Full quality gate (lint + test)
-make test                             # Run e2e tests
-agent-harness lint                    # Direct harness invocation
-agent-harness fix                     # Direct harness fix
-
-# E2E tests (requires running app)
-cd e2e-tests && npm run e2e           # Run Playwright tests
-cd e2e-tests && npm run e2e:ui        # Playwright UI mode
-cd e2e-tests && npm run e2e:headed    # Run in headed browser
+make fix                              # Auto-fix (biome format + lint fix)
+make lint                             # wasp compile → tsc → agent-harness lint
+make test                             # Start DB + app → Playwright → tear down
+make check                            # lint + test (full gate)
 
 # Build
 wasp build                            # Production build
 ```
 
+## Development Process
+
+### Agent workflow (TDD)
+
+1. Read spec/ticket
+2. Write failing e2e test in `e2e-tests/tests/`
+3. Implement feature: schema → `wasp db migrate-dev` → queries/actions → UI
+4. `make check` — verifies lint + type check + e2e tests pass
+5. Refactor, re-run `make check`
+
+### How verification works
+
+| Step | Command | What it does |
+|------|---------|-------------|
+| Fix | `make fix` | Biome auto-fix + format |
+| Typecheck | `make typecheck` | `wasp compile` (generates SDK) → `tsc --noEmit` |
+| Lint | `make lint` | typecheck + agent-harness (biome lint/format, conftest, yamllint) |
+| Test | `make test` | Starts PostgreSQL + Wasp app via wasp-app-runner → Playwright → tears down |
+| Full gate | `make check` | lint + test |
+
+### How e2e tests work
+
+Playwright's `webServer` config uses `@wasp.sh/wasp-app-runner` which automatically:
+1. Starts a PostgreSQL container (Docker)
+2. Runs `wasp db migrate-dev`
+3. Starts `wasp start` non-interactively
+4. Waits for the app to be ready
+5. Tears everything down after tests complete
+
+No manual service management needed. Just run `make test`.
+
+### Troubleshooting
+
+- **tsc errors about `wasp/*` modules:** Run `wasp compile` first (or `make typecheck`)
+- **e2e tests hang:** Ensure Docker is running (`docker info`)
+- **Port conflicts:** Kill existing processes on :3000/:3001 or let wasp-app-runner handle it
+
 ## Wasp Concepts
 
-- **`main.wasp`** — DSL config defining the app: routes, pages, queries (read), actions (write), auth, jobs
+- **`main.wasp`** — DSL config: routes, pages, queries (read), actions (write), auth, jobs
 - **`schema.prisma`** — Prisma schema for database models
 - **Queries** — Server functions for reading data. Declared in `main.wasp`, implemented in `src/*/queries.ts`. Used client-side via `useQuery` hook (auto-cached, auto-invalidated)
-- **Actions** — Server functions for writing data. Declared in `main.wasp`, implemented in `src/*/actions.ts`. Called directly from client code. Auto-invalidates related queries
+- **Actions** — Server functions for writing data. Declared in `main.wasp`, implemented in `src/*/actions.ts`. Called directly from client. Auto-invalidates related queries
 - **Pages** — React components bound to routes via `main.wasp`
 - **Auth** — Built-in, configured in `main.wasp`. `authRequired: true` on pages protects them
 
@@ -71,22 +100,8 @@ wasp build                            # Production build
 4. Implement server functions in `src/<feature>/queries.ts` and `src/<feature>/actions.ts`
 5. Create page component in `src/<feature>/`
 6. Add route + page in `main.wasp`
-7. Add e2e tests in `e2e-tests/tests/`
-
-## Testing Strategy
-
-- **Unit/integration:** `wasp test client` (Vitest, for React components)
-- **E2E:** Playwright in `e2e-tests/` (requires running app + database)
-- E2E tests should cover: auth flows, CRUD operations, navigation
-- Always run `make check` before committing
-
-## TypeScript & Wasp SDK
-
-Wasp generates TypeScript types at `.wasp/out/sdk/wasp` during `wasp start`. Direct `tsc --noEmit` will fail until the dev server has been run at least once. Type checking happens implicitly through:
-- `wasp start` (catches compilation errors in real-time)
-- `wasp build` (full type check during production build)
-
-The `agent-harness lint` typecheck step (tsc) will report `wasp/*` module errors — this is expected when the Wasp SDK hasn't been generated yet. Run `wasp start` first to generate the SDK.
+7. Write e2e tests in `e2e-tests/tests/`
+8. Run `make check` to verify everything
 
 ## Code Style
 

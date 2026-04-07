@@ -1,7 +1,11 @@
-.PHONY: lint fix check test dev db migrate
+.PHONY: lint fix check test typecheck dev db migrate
 
-lint:
+lint: typecheck
 	agent-harness lint
+
+typecheck:
+	wasp compile
+	npx tsc --noEmit
 
 fix:
 	agent-harness fix

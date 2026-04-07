@@ -5,5 +5,11 @@ exclude:
   - .wasp/
   - e2e-tests/
 
+# Wasp generates TypeScript SDK via `wasp compile` — standalone tsc can't
+# resolve wasp/* imports without it. Type checking is handled in Makefile:
+# wasp compile → tsc --noEmit.
+skip:
+  - typecheck
+
 javascript:
   line_length: 100
