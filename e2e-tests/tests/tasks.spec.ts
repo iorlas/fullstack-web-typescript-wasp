@@ -38,7 +38,7 @@ test.describe("Tasks CRUD (authenticated)", () => {
 
   test("should create a task", async ({ page }) => {
     const taskDescription = `Test task ${Date.now()}`;
-    const input = page.getByPlaceholder(/what needs to be done/i).or(page.getByRole("textbox"));
+    const input = page.getByPlaceholder(/what do i need to do/i).or(page.getByRole("textbox"));
     await input.fill(taskDescription);
     await page.getByRole("button", { name: /add|create/i }).click();
 
@@ -49,7 +49,7 @@ test.describe("Tasks CRUD (authenticated)", () => {
   test("should toggle task completion", async ({ page }) => {
     // Create a task first
     const taskDescription = `Toggle task ${Date.now()}`;
-    const input = page.getByPlaceholder(/what needs to be done/i).or(page.getByRole("textbox"));
+    const input = page.getByPlaceholder(/what do i need to do/i).or(page.getByRole("textbox"));
     await input.fill(taskDescription);
     await page.getByRole("button", { name: /add|create/i }).click();
     await expect(page.getByText(taskDescription)).toBeVisible({ timeout: 5000 });
